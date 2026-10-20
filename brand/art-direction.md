@@ -18,8 +18,10 @@
 | `anyship_banner.png` | 3000×1000 | X-header ("Describe it. [märket] Ship it.") |
 | `anyship_post.png` | 3200×1800 | Launch-post: app-fönster som är halvt ritning, halvt färdigt |
 | `anyship_review.jpg` | | X-mockup med skyddszoner och avatar i 96/48/32/24 px |
+| `anyship_prelaunch_reveal.png` | 3200×1800 | Pre-launch reveal: "Any app. Your version." med en vägg av app-fönster som byggs |
+| `anyship_prelaunch_call.png` | 3200×1800 | Sista call: "One stage left.", nästan färdig 3D-ikon, stegen med LAUNCH kvar, CA-varning |
 | `anyship-mark.svg` | | Märket (vit + blå, `currentColor`) |
-| `source/*.html` | | Källorna. Ändra text och rendera om med 2× skala |
+| `source/*.html` | | Källorna. Ändra text och rendera om med 2× skala (pre-launch-bilderna använder `bw.css`, `windows.js` och `bwrender.js` i samma mapp) |
 
 ## Kompositioner
 

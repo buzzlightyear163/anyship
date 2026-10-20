@@ -1,0 +1,96 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  :root { --ink:#07080B; --white:#F4F5F7; --muted:#8A8F98; --blue:#3E64FF; --blue-hi:#5F7FFF; --green:#33D17A; }
+  body { background:var(--ink); position:relative; color:var(--white); overflow:hidden; }
+  .light { position:absolute; inset:0; background:
+    radial-gradient(34% 58% at 30% 52%, rgba(62,100,255,.24), transparent 70%),
+    radial-gradient(90% 100% at 40% 50%, #0D0F15, var(--ink) 72%); }
+  .grid { position:absolute; inset:0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255,255,255,.022) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.022) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+    -webkit-mask-image: radial-gradient(60% 90% at 30% 50%, #000 20%, transparent 85%); }
+
+  /* the nearly-built tile */
+  .scene { position:absolute; left:110px; top:120px; width:700px; height:640px; perspective:1500px; display:grid; place-items:center; }
+  .stage { --x: 9%; position:relative; width:400px; aspect-ratio:168/196; transform-style:preserve-3d; transform: rotateX(8deg) rotateY(-20deg); }
+  .layer { position:absolute; inset:0; clip-path: inset(-30% -30% -30% var(--x)); }
+  .layer::before { content:''; position:absolute; left:2.4%; top:9.2%; width:95.2%; height:81.6%; border-radius:25%; }
+  .depth { transform: translateZ(calc(var(--i) * -7px)); }
+  .depth::before { background: hsl(224 14% calc(62% - var(--i) * 5%)); }
+  .solid::before { background: linear-gradient(150deg, #ffffff 0%, #eef0f5 45%, #d9dee8 100%); box-shadow: inset 0 1px 0 #fff, inset 0 -18px 40px rgba(0,0,0,.07); }
+  .ui { position:absolute; border-radius:999px; }
+  .ui.a { left:16%; top:24%; width:34%; height:4.6%; background:#bcc1ca; }
+  .ui.b { left:16%; top:33%; width:66%; height:3.2%; background:#e0e3e9; }
+  .ui.c { left:16%; top:40%; width:50%; height:3.2%; background:#e0e3e9; }
+  .ui.d { left:16%; top:66%; width:34%; height:9%; border-radius:14px; background:var(--blue); box-shadow:0 10px 24px -10px rgba(62,100,255,.9); }
+  .wire { position:absolute; inset:0; width:100%; height:100%; color:rgba(244,245,247,.62); clip-path: inset(-30% calc(100% - var(--x)) -30% -30%); transform: translateZ(1px); overflow:visible; }
+  .line { position:absolute; top:3%; bottom:3%; left:var(--x); width:9px; margin-left:-4.5px; border-radius:5px; background:var(--blue);
+    box-shadow: 0 0 26px rgba(62,100,255,.95), 0 0 80px rgba(62,100,255,.5); transform: translateZ(10px); }
+  .tag { position:absolute; left:var(--x); top:-4%; transform: translateZ(12px) translateX(-6px); padding:9px 12px; border-radius:8px; background:var(--blue); color:#fff;
+    font:500 15px/1 Mono; letter-spacing:.1em; white-space:nowrap; }
+  .dim { position:absolute; left:2.4%; width:95.2%; top:-11%; display:flex; align-items:center; gap:12px; font:500 13px/1 Mono; letter-spacing:.16em; color:var(--muted); transform: translateZ(2px); }
+  .dim i { flex:1; height:1px; background:rgba(255,255,255,.25); position:relative; }
+
+  /* right column */
+  .kicker { position:absolute; left:880px; top:150px; display:flex; align-items:center; gap:12px; font:500 18px/1 Mono; letter-spacing:.18em; color:var(--muted); }
+  .kicker i { width:9px; height:9px; border-radius:50%; background:var(--blue-hi); box-shadow:0 0 0 4px rgba(62,100,255,.2), 0 0 14px rgba(62,100,255,.8); }
+  .kicker b { color:var(--white); font-weight:500; }
+  h1 { position:absolute; left:880px; top:206px; margin:0; font:600 104px/0.96 Sans; letter-spacing:-.052em; }
+  h1 em { display:block; font:400 116px/1.02 Accent; letter-spacing:-.01em; color:var(--blue-hi); font-style:normal; }
+  .stages { position:absolute; left:880px; top:470px; display:grid; grid-template-columns: repeat(5, auto); gap:10px; }
+  .st { display:flex; align-items:center; gap:9px; padding:10px 13px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.03);
+    font:500 15px/1 Mono; letter-spacing:.1em; color:var(--muted); }
+  .st .c { width:18px; height:18px; border-radius:50%; background:var(--green); color:#07120b; display:grid; place-items:center; font:700 11px/1 Sans; }
+  .st.on { border-color:rgba(62,100,255,.7); background:rgba(62,100,255,.14); color:var(--white); }
+  .st.on .c { background:transparent; border:2px solid var(--blue-hi); box-shadow:0 0 10px rgba(62,100,255,.8); }
+  .note { position:absolute; left:880px; top:574px; width:620px; margin:0; font:400 30px/1.4 Sans; color:#B4B8C0; letter-spacing:-.01em; }
+  .ca { position:absolute; left:880px; top:700px; display:flex; align-items:center; gap:14px; padding:16px 20px; border-radius:14px;
+    border:1px solid rgba(255,255,255,.14); background:rgba(17,20,26,.85); font:500 18px/1.2 Mono; letter-spacing:.12em; color:var(--white); }
+  .ca svg { flex:none; }
+  .meta { position:absolute; left:96px; bottom:64px; font:500 18px/1 Mono; letter-spacing:.18em; color:var(--muted); }
+  .meta b { color:var(--white); font-weight:500; }
+</style></head>
+<body>
+  <div class="light"></div>
+  <div class="grid"></div>
+
+  <div class="scene" data-keep="tile">
+    <div class="stage">
+      <div class="dim"><i></i><span>~20 MIN</span><i></i></div>
+      <div class="layer depth" style="--i:7"></div>
+      <div class="layer depth" style="--i:6"></div>
+      <div class="layer depth" style="--i:5"></div>
+      <div class="layer depth" style="--i:4"></div>
+      <div class="layer depth" style="--i:3"></div>
+      <div class="layer depth" style="--i:2"></div>
+      <div class="layer depth" style="--i:1"></div>
+      <div class="layer solid"><span class="ui a"></span><span class="ui b"></span><span class="ui c"></span><span class="ui d"></span></div>
+      <svg class="wire" viewBox="0 0 168 196" preserveAspectRatio="none">
+        <rect x="4" y="18" width="160" height="160" rx="40" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="9 7"/>
+      </svg>
+      <div class="line"></div>
+      <div class="tag">LAUNCH · 19:40 / 20:00</div>
+    </div>
+  </div>
+
+  <div class="kicker"><i></i><span><b>$SHIP</b> · LAST CALL</span></div>
+  <h1>One stage<em>left.</em></h1>
+  <div class="stages">
+    <span class="st"><span class="c">✓</span>PLAN</span>
+    <span class="st"><span class="c">✓</span>WRITE</span>
+    <span class="st"><span class="c">✓</span>REVIEW</span>
+    <span class="st"><span class="c">✓</span>TEST</span>
+    <span class="st on"><span class="c"></span>LAUNCH</span>
+  </div>
+  <p class="note">AnyShip goes on pump.fun next. Describe any app, launch its coin, own your version.</p>
+  <div class="ca">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5F7FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    THE ONLY REAL CA IS POSTED FROM THIS ACCOUNT
+  </div>
+
+  <div class="meta"><b>ANYSHIP</b> · PUMP.FUN · SOLANA</div>
+</body></html>
