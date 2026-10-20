@@ -1,0 +1,62 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  :root { --ink:#07080B; --white:#F4F5F7; --muted:#8A8F98; --blue:#3E64FF; --blue-hi:#5F7FFF; }
+  body { background:var(--ink); position:relative; color:var(--white); }
+  .light { position:absolute; inset:0; background:
+    radial-gradient(28% 70% at 50.6% 50%, rgba(62,100,255,.20), transparent 72%),
+    radial-gradient(70% 120% at 50% 50%, #0D0F15, var(--ink) 70%); }
+  .grid { position:absolute; inset:0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.06) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255,255,255,.028) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.028) 1px, transparent 1px);
+    background-size: 125px 125px, 125px 125px, 25px 25px, 25px 25px;
+    background-position: 0 0;
+    -webkit-mask-image: radial-gradient(60% 100% at 50% 50%, #000 10%, transparent 80%); }
+
+  .mark { position:absolute; left:750px; top:250px; height:330px; transform:translate(-50%,-50%); color:var(--white); }
+  .acc { fill:var(--blue); }
+
+  /* dimension line above the tile */
+  .dim { position:absolute; left:608px; width:284px; top:60px; height:14px; }
+  .dim::before, .dim::after { content:''; position:absolute; top:6px; width:calc(50% - 64px); border-top:1px solid rgba(255,255,255,.28); }
+  .dim::before { left:0 } .dim::after { right:0 }
+  .dim i { position:absolute; top:0; width:1px; height:14px; background:rgba(255,255,255,.28); }
+  .dim i:first-child { left:0 } .dim i:last-of-type { right:0 }
+  .dim span { position:absolute; left:50%; top:-1px; transform:translate(-50%,-50%); 
+    font:500 13px/1 Mono; letter-spacing:.16em; color:var(--muted); }
+
+  .h { position:absolute; top:250px; transform:translateY(-50%); white-space:nowrap; }
+  .left { right:calc(1500px - 560px); font:600 78px/1 Sans; letter-spacing:-.04em; }
+  .right { left:942px; font:400 92px/1 Accent; letter-spacing:-.01em; color:var(--blue-hi); }
+
+  .kicker { position:absolute; left:64px; top:46px; font:500 15px/1 Mono; letter-spacing:.18em; color:var(--muted); }
+  .kicker b { color:var(--white); font-weight:500; }
+  .meta { position:absolute; right:64px; bottom:44px; font:500 15px/1 Mono; letter-spacing:.18em; color:var(--muted);
+    display:flex; gap:14px; align-items:center; }
+  .meta .live { display:inline-flex; align-items:center; gap:8px; color:var(--white); }
+  .meta .live::before { content:''; width:7px; height:7px; border-radius:50%; background:#33D17A; box-shadow:0 0 10px rgba(51,209,122,.7); }
+  .tick { position:absolute; font:500 12px/1 Mono; letter-spacing:.16em; color:rgba(255,255,255,.32); }
+</style></head>
+<body>
+  <div class="light"></div>
+  <div class="grid"></div>
+
+  <div class="kicker"><b>ANYSHIP</b>&nbsp;&nbsp;·&nbsp;&nbsp;ANY APP, ONE FILE</div>
+
+  <div class="dim"><i></i><i></i><span>~20 MIN</span></div>
+  <span class="tick" style="left:618px; top:436px">SPEC</span>
+  <span class="tick" style="left:838px; top:436px">FILE</span>
+
+  <svg class="mark" data-keep="mark" xmlns="http://www.w3.org/2000/svg" viewBox="16 2 168 196">
+    <path d="M87 24H60A36 36 0 0 0 24 60V140A36 36 0 0 0 60 176H87" fill="none" stroke="currentColor" stroke-width="16" stroke-dasharray="24 13.18"/>
+    <rect class="acc" x="93" y="2" width="14" height="196"/>
+    <path d="M113 16H140A44 44 0 0 1 184 60V140A44 44 0 0 1 140 184H113Z" fill="currentColor"/>
+  </svg>
+
+  <div class="h left">Describe it.</div>
+  <div class="h right">Ship it.</div>
+
+  <div class="meta"><span>$SHIP</span><span>·</span><span class="live">LIVE</span><span>·</span><span>SOLANA</span></div>
+</body></html>

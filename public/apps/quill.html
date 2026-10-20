@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbfaf7">
+<title>Quill</title>
+<style>
+  :root { --bg: #fbfaf7; --side: #f3f1ec; --line: #e6e2d9; --text: #22201b; --muted: #8a8478; --accent: #b45309; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--text); display: grid; grid-template-columns: 280px 1fr; font-size: 14px; }
+  button, input, textarea { font: inherit; color: inherit; }
+  aside { background: var(--side); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .top { padding: 14px; display: grid; gap: 10px; }
+  .brand { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 16px; letter-spacing: -.02em; }
+  .new { height: 30px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-weight: 500; }
+  .new:hover { border-color: #cfc9bc; }
+  .search { height: 34px; width: 100%; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: #fff; outline: none; }
+  .search:focus { border-color: var(--text); }
+  .list { flex: 1; overflow: auto; padding: 0 8px 12px; }
+  .item { display: block; width: 100%; text-align: left; padding: 9px 10px; border-radius: 8px; border: 0; background: none; cursor: pointer; margin-bottom: 2px; }
+  .item:hover { background: rgba(0,0,0,.04); }
+  .item.on { background: #fff; box-shadow: 0 0 0 1px var(--line); }
+  .item strong { display: flex; gap: 6px; align-items: center; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item small { display: block; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+  .star { color: var(--accent); }
+  .empty-list { color: var(--muted); padding: 10px; font-size: 13px; }
+  main { display: flex; flex-direction: column; min-width: 0; }
+  .bar { display: flex; align-items: center; gap: 8px; padding: 10px 24px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
+  .bar .sp { flex: 1; }
+  .bar button { height: 28px; padding: 0 10px; border-radius: 7px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
+  .bar button:hover { border-color: #cfc9bc; color: var(--text); }
+  .doc { flex: 1; overflow: auto; padding: 40px 24px 80px; }
+  .doc-inner { max-width: 720px; margin: 0 auto; }
+  .title { width: 100%; border: 0; outline: none; background: none; font-size: 34px; font-weight: 700; letter-spacing: -.03em; font-family: Georgia, 'Times New Roman', serif; }
+  .body { width: 100%; min-height: 60vh; border: 0; outline: none; background: none; resize: none; margin-top: 14px; font-size: 16px; line-height: 1.75; }
+  .placeholder { display: grid; place-items: center; height: 100%; color: var(--muted); }
+  .menu-btn { display: none; }
+  @media (max-width: 720px) {
+    body { grid-template-columns: 1fr; }
+    aside { position: fixed; inset: 0 30% 0 0; z-index: 5; transform: translateX(-100%); transition: transform .2s; box-shadow: 0 0 40px rgba(0,0,0,.15); }
+    body.side aside { transform: none; }
+    .menu-btn { display: inline-block; }
+    .title { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<aside>
+  <div class="top">
+    <div class="brand">Quill <button class="new" id="new">New</button></div>
+    <input class="search" id="q" placeholder="Search notes" type="search">
+  </div>
+  <div class="list" id="list"></div>
+</aside>
+<main>
+  <div class="bar">
+    <button class="menu-btn" id="menu">Notes</button>
+    <span id="meta"></span><span class="sp"></span>
+    <button id="fav">☆ Favorite</button>
+    <button id="md">Export .md</button>
+    <button id="del">Delete</button>
+  </div>
+  <div class="doc" id="doc"></div>
+</main>
+<script>
+(() => {
+  const KEY = 'quill:notes';
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; } };
+  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch {} };
+  const uid = () => Math.random().toString(36).slice(2, 10);
+  let notes = load() || [
+    { id: uid(), title: 'Welcome to Quill', body: 'Notes save as you type, right in this browser.\n\n- Use New to start a note\n- Search finds words in titles and text\n- Star the notes you open often\n- Export any note as Markdown', fav: true, updated: Date.now() },
+    { id: uid(), title: 'Ideas', body: 'A place for half-finished thoughts.', fav: false, updated: Date.now() - 3600e3 },
+  ];
+  let current = notes[0] && notes[0].id, q = '';
+  const $ = (id) => document.getElementById(id);
+  const ago = (t) => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : m < 1440 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago'; };
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  function renderList() {
+    const term = q.toLowerCase();
+    const shown = notes.filter((n) => !term || n.title.toLowerCase().includes(term) || n.body.toLowerCase().includes(term))
+      .sort((a, b) => (b.fav - a.fav) || (b.updated - a.updated));
+    $('list').innerHTML = shown.length ? shown.map((n) => `<button class="item ${n.id === current ? 'on' : ''}" data-id="${n.id}"><strong>${n.fav ? '<span class="star">★</span>' : ''}${esc(n.title || 'Untitled')}</strong><small>${esc(n.body.split('\n')[0] || 'Empty note')}</small></button>`).join('') : '<p class="empty-list">No notes match.</p>';
+  }
+  function renderDoc() {
+    const n = notes.find((x) => x.id === current);
+    $('fav').disabled = $('md').disabled = $('del').disabled = !n;
+    if (!n) { $('doc').innerHTML = '<div class="placeholder">No note selected</div>'; $('meta').textContent = ''; return; }
+    $('doc').innerHTML = `<div class="doc-inner"><input class="title" id="title" placeholder="Untitled" value="${esc(n.title)}"><textarea class="body" id="body" placeholder="Start writing…">${esc(n.body)}</textarea></div>`;
+    $('fav').textContent = n.fav ? '★ Favorite' : '☆ Favorite';
+    const meta = () => { const words = (n.body.match(/\S+/g) || []).length; $('meta').textContent = words + ' words · edited ' + ago(n.updated); };
+    meta();
+    const touch = () => { n.updated = Date.now(); persist(); renderList(); meta(); };
+    $('title').oninput = (e) => { n.title = e.target.value; touch(); };
+    $('body').oninput = (e) => { n.body = e.target.value; touch(); };
+  }
+  $('list').onclick = (e) => { const b = e.target.closest('.item'); if (!b) return; current = b.dataset.id; document.body.classList.remove('side'); renderList(); renderDoc(); };
+  $('new').onclick = () => { const n = { id: uid(), title: '', body: '', fav: false, updated: Date.now() }; notes.unshift(n); current = n.id; persist(); renderList(); renderDoc(); $('title').focus(); document.body.classList.remove('side'); };
+  $('q').oninput = (e) => { q = e.target.value; renderList(); };
+  $('fav').onclick = () => { const n = notes.find((x) => x.id === current); if (!n) return; n.fav = !n.fav; persist(); renderList(); renderDoc(); };
+  $('del').onclick = () => { notes = notes.filter((x) => x.id !== current); current = notes[0] && notes[0].id; persist(); renderList(); renderDoc(); };
+  $('md').onclick = () => { const n = notes.find((x) => x.id === current); if (!n) return; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['# ' + (n.title || 'Untitled') + '\n\n' + n.body], { type: 'text/markdown' })); a.download = (n.title || 'note').replace(/[^\w-]+/g, '-').toLowerCase() + '.md'; a.click(); };
+  $('menu').onclick = () => document.body.classList.toggle('side');
+  renderList(); renderDoc();
+})();
+</script>
+</body>
+</html>

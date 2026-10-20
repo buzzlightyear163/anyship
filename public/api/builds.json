@@ -1,0 +1,160 @@
+{
+  "_comment": "Mockdata. TODO(backend): ersätt med GET /api/builds",
+  "stats": {
+    "shipped": 148,
+    "startedThisWeek": 37,
+    "medianBuildMinutes": 19
+  },
+  "builds": [
+    {
+      "mint": "7qC3KGLP36zkqcXvfcjj9sKeJNTYKG6oEL7qbnyupump",
+      "name": "Hearth",
+      "ticker": "HEARTH",
+      "inspiredBy": "Discord",
+      "kind": "chat",
+      "format": "web",
+      "status": "building",
+      "startedMinutesAgo": 4,
+      "launchedMinutesAgo": 5
+    },
+    {
+      "mint": "DjHsJc2GXoEzJDY8jBBov7hXCJj3M6uLPw2smANUpump",
+      "name": "Beatloom",
+      "ticker": "LOOM",
+      "inspiredBy": "FL Studio",
+      "kind": "musicProd",
+      "format": "web",
+      "status": "building",
+      "startedMinutesAgo": 1,
+      "launchedMinutesAgo": 2
+    },
+    {
+      "mint": "RqgaLWxbXgBCDuxKLPd9de4cGbYMcEXfva7tXWbspump",
+      "name": "Lumen",
+      "ticker": "LUMEN",
+      "inspiredBy": "ChatGPT",
+      "kind": "ai",
+      "format": "web",
+      "status": "building",
+      "startedMinutesAgo": 11,
+      "launchedMinutesAgo": 12
+    },
+    {
+      "mint": "LxEeqmCkbePgSyGCXGxXCpnfzwqV25SoDqXMWLsFpump",
+      "name": "Driftwave",
+      "ticker": "DRIFT",
+      "inspiredBy": "Spotify",
+      "kind": "musicPlayer",
+      "format": "pwa",
+      "status": "building",
+      "startedMinutesAgo": 17,
+      "launchedMinutesAgo": 18
+    },
+    {
+      "mint": "DkPTZcSbAf3QAy5bepiSmdq6YZXUS7aSqVFbKBZjpump",
+      "name": "Gridwise",
+      "ticker": "GRID",
+      "inspiredBy": "Excel",
+      "kind": "spreadsheet",
+      "format": "web",
+      "status": "feesplit",
+      "launchedMinutesAgo": 22
+    },
+    {
+      "mint": "h7RS3oCFediH3Pu6d53aoNGobofe3yzHw6bsjqJRpump",
+      "name": "Vaultly",
+      "ticker": "VAULT",
+      "inspiredBy": "1Password",
+      "kind": "passwords",
+      "format": "cli",
+      "status": "failed",
+      "launchedMinutesAgo": 96
+    },
+    {
+      "mint": "zrigVfGYEWV3eUoUd3CYcvk88x4gAmhHc6yRPhBepump",
+      "name": "Reelcut",
+      "ticker": "RCUT",
+      "inspiredBy": "Premiere Pro",
+      "kind": "video",
+      "format": "web",
+      "status": "ready",
+      "launchedMinutesAgo": 184,
+      "file": "/apps/reelcut.html",
+      "sizeKb": 14
+    },
+    {
+      "mint": "GoDbLgcPgAGccNVsFGDk8vDVyjypgM4CCTh3fivppump",
+      "name": "Corkboard",
+      "ticker": "CORK",
+      "inspiredBy": "Trello",
+      "kind": "boards",
+      "format": "web",
+      "status": "ready",
+      "launchedMinutesAgo": 410
+    },
+    {
+      "mint": "eKDNGNxDV1dDNzj12y6mQW3ugqtkgHEdrK1VbuKBpump",
+      "name": "Inkwell",
+      "ticker": "INK",
+      "inspiredBy": "Photoshop",
+      "kind": "photo",
+      "format": "web",
+      "status": "ready",
+      "launchedMinutesAgo": 1560,
+      "file": "/apps/inkwell.html",
+      "sizeKb": 11
+    },
+    {
+      "mint": "8LSDBpQWSbmZNPsBtQV7KMZzeLWsSWbZdWMd9jwTpump",
+      "name": "Tabula",
+      "ticker": "TABULA",
+      "inspiredBy": "Chrome",
+      "kind": "browser",
+      "format": "pwa",
+      "status": "ready",
+      "launchedMinutesAgo": 2300
+    },
+    {
+      "mint": "b4bH7MrcVU4432hDkpfg2JQ5DeGtY4Pfy65TRpy2pump",
+      "name": "Framewise",
+      "ticker": "FRAME",
+      "inspiredBy": "Figma",
+      "kind": "design",
+      "format": "web",
+      "status": "ready",
+      "launchedMinutesAgo": 3100
+    },
+    {
+      "mint": "Ye6atJ1iF8Fu4MkqsB75iDiHibAVyPeqcYSE3fZMpump",
+      "name": "Quill",
+      "ticker": "QUILL",
+      "inspiredBy": "Notion",
+      "kind": "notes",
+      "format": "pwa",
+      "status": "ready",
+      "launchedMinutesAgo": 4350,
+      "file": "/apps/quill.html",
+      "sizeKb": 9
+    },
+    {
+      "mint": "t8mXc64vdnPSKLWLPfPptUjz8jzGCKjhqQadvgF4pump",
+      "name": "Ledgerly",
+      "ticker": "LEDGER",
+      "inspiredBy": "QuickBooks Online",
+      "kind": "finance",
+      "format": "web",
+      "status": "ready",
+      "launchedMinutesAgo": 5900
+    },
+    {
+      "mint": "ZeghHJRcgx7VVJVJD5kf1wDsnPW6y47XdBd8VJqUpump",
+      "name": "Pagewise",
+      "ticker": "PAGE",
+      "inspiredBy": "Adobe Acrobat Pro",
+      "kind": "pdf",
+      "format": "web",
+      "status": "ready",
+      "launchedMinutesAgo": 7200
+    }
+  ]
+}

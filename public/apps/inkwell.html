@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inkwell</title>
+<style>
+  :root { --bg: #f3f1ec; --panel: #fffdf8; --line: #e3ded3; --text: #1d1b16; --muted: #857f72; --accent: #2f5bd3; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; font-size: 14px; }
+  button, input { font: inherit; color: inherit; }
+  header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--panel); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .brand { font-weight: 700; letter-spacing: -.02em; margin-right: 8px; font-family: Georgia, serif; font-size: 17px; }
+  .group { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+  .group button { height: 30px; min-width: 34px; padding: 0 10px; border: 0; border-radius: 7px; background: none; cursor: pointer; }
+  .group button:hover { background: #f1eee6; }
+  .group button.on { background: var(--text); color: #fff; }
+  .group button:disabled { opacity: .35; cursor: not-allowed; }
+  label.ctl { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; }
+  input[type=color] { width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: none; cursor: pointer; }
+  input[type=range] { width: 110px; accent-color: var(--text); }
+  .sp { flex: 1; }
+  .swatches { display: flex; gap: 4px; }
+  .swatches i { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+  main { flex: 1; display: grid; place-items: center; padding: 16px; min-height: 0; }
+  .paper { position: relative; width: 100%; height: 100%; max-width: 1200px; background: #fff; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 20px 40px -24px rgba(0,0,0,.3); overflow: hidden; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+  footer { padding: 6px 14px; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; border-top: 1px solid var(--line); background: var(--panel); }
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">Inkwell</span>
+  <div class="group" id="tools">
+    <button data-tool="pen" class="on" title="Pen (P)">Pen</button>
+    <button data-tool="line" title="Line (L)">Line</button>
+    <button data-tool="rect" title="Rectangle (R)">Rect</button>
+    <button data-tool="ellipse" title="Ellipse (E)">Ellipse</button>
+    <button data-tool="eraser" title="Eraser (X)">Eraser</button>
+  </div>
+  <label class="ctl">Color <input type="color" id="color" value="#1d1b16"></label>
+  <div class="swatches" id="swatches"></div>
+  <label class="ctl">Size <input type="range" id="size" min="1" max="60" value="6"><span id="sizeVal">6</span></label>
+  <span class="sp"></span>
+  <div class="group">
+    <button id="undo" title="Undo (Ctrl+Z)" disabled>Undo</button>
+    <button id="redo" title="Redo (Ctrl+Shift+Z)" disabled>Redo</button>
+    <button id="clear">Clear</button>
+    <button id="export">Export PNG</button>
+  </div>
+</header>
+<main><div class="paper" id="paper"><canvas id="c"></canvas></div></main>
+<footer><span id="status">Pen · 6px</span><span>Saved in this browser</span></footer>
+<script>
+(() => {
+  const c = document.getElementById('c'), ctx = c.getContext('2d'), paper = document.getElementById('paper');
+  const st = { tool: 'pen', color: '#1d1b16', size: 6, drawing: false, start: null, last: null, snap: null };
+  const undo = [], redo = [], KEY = 'inkwell:last';
+  const colors = ['#1d1b16', '#d6452b', '#f2a33a', '#3c9a5f', '#2f5bd3', '#8b5cf6', '#ffffff'];
+  const sw = document.getElementById('swatches');
+  colors.forEach((col) => { const i = document.createElement('i'); i.style.background = col; i.onclick = () => setColor(col); sw.appendChild(i); });
+
+  function fit() {
+    const r = paper.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const prev = c.width ? c.toDataURL() : null;
+    c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, r.width, r.height);
+    const src = prev || (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
+    if (src) { const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0, r.width, r.height); img.src = src; }
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function save() { try { localStorage.setItem(KEY, c.toDataURL('image/png')); } catch {} }
+  function snapshot() { return ctx.getImageData(0, 0, c.width, c.height); }
+  function pushUndo() { undo.push(snapshot()); if (undo.length > 40) undo.shift(); redo.length = 0; sync(); }
+  function sync() { document.getElementById('undo').disabled = !undo.length; document.getElementById('redo').disabled = !redo.length; document.getElementById('status').textContent = st.tool[0].toUpperCase() + st.tool.slice(1) + ' · ' + st.size + 'px'; }
+  function restore(img) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.putImageData(img, 0, 0); ctx.restore(); }
+
+  function setTool(t) { st.tool = t; document.querySelectorAll('#tools button').forEach((b) => b.classList.toggle('on', b.dataset.tool === t)); sync(); }
+  function setColor(col) { st.color = col; document.getElementById('color').value = col; }
+  document.getElementById('tools').onclick = (e) => e.target.dataset.tool && setTool(e.target.dataset.tool);
+  document.getElementById('color').oninput = (e) => setColor(e.target.value);
+  document.getElementById('size').oninput = (e) => { st.size = +e.target.value; document.getElementById('sizeVal').textContent = st.size; sync(); };
+
+  const pos = (e) => { const r = c.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  function stroke() { ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = st.size; ctx.strokeStyle = st.tool === 'eraser' ? '#fff' : st.color; }
+
+  c.addEventListener('pointerdown', (e) => {
+    c.setPointerCapture(e.pointerId); pushUndo();
+    st.drawing = true; st.start = st.last = pos(e); st.snap = snapshot();
+    if (st.tool === 'pen' || st.tool === 'eraser') { stroke(); ctx.beginPath(); ctx.arc(st.start.x, st.start.y, st.size / 2, 0, Math.PI * 2); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); }
+  });
+  c.addEventListener('pointermove', (e) => {
+    if (!st.drawing) return;
+    const p = pos(e); stroke();
+    if (st.tool === 'pen' || st.tool === 'eraser') { ctx.beginPath(); ctx.moveTo(st.last.x, st.last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); st.last = p; return; }
+    restore(st.snap); ctx.beginPath();
+    const s = st.start;
+    if (st.tool === 'line') { ctx.moveTo(s.x, s.y); ctx.lineTo(p.x, p.y); }
+    if (st.tool === 'rect') ctx.rect(s.x, s.y, p.x - s.x, p.y - s.y);
+    if (st.tool === 'ellipse') ctx.ellipse((s.x + p.x) / 2, (s.y + p.y) / 2, Math.abs(p.x - s.x) / 2, Math.abs(p.y - s.y) / 2, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+  const end = () => { if (!st.drawing) return; st.drawing = false; save(); };
+  c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+
+  function doUndo() { if (!undo.length) return; redo.push(snapshot()); restore(undo.pop()); save(); sync(); }
+  function doRedo() { if (!redo.length) return; undo.push(snapshot()); restore(redo.pop()); save(); sync(); }
+  document.getElementById('undo').onclick = doUndo;
+  document.getElementById('redo').onclick = doRedo;
+  document.getElementById('clear').onclick = () => { pushUndo(); const r = paper.getBoundingClientRect(); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, r.width, r.height); save(); };
+  document.getElementById('export').onclick = () => { const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = 'inkwell.png'; a.click(); };
+
+  document.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); return; }
+    if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); doRedo(); return; }
+    const map = { p: 'pen', l: 'line', r: 'rect', e: 'ellipse', x: 'eraser' };
+    if (map[k] && !e.ctrlKey && !e.metaKey) setTool(map[k]);
+  });
+  sync();
+})();
+</script>
+</body>
+</html>

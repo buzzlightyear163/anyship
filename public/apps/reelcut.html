@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reelcut</title>
+<style>
+  :root {
+    --bg: #0f1012; --panel: #17181b; --panel-2: #1e2024; --line: #2a2c31;
+    --text: #ececf0; --muted: #8d8f98; --accent: #ff6a3d; --accent-2: #ffd166; --ok: #4ade80;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--text); font-size: 14px; display: flex; flex-direction: column; }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; height: 32px; padding: 0 12px; }
+  button:hover:not(:disabled) { border-color: #3b3e45; background: #24262b; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #140b07; font-weight: 600; }
+  button.primary:hover:not(:disabled) { background: #ff7d55; }
+  header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  .brand { font-weight: 700; letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; }
+  .brand i { width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: inline-block; }
+  header .sp { flex: 1; }
+  header .file { color: var(--muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40vw; }
+  main { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 280px; min-height: 0; }
+  .stage { display: flex; flex-direction: column; min-height: 0; }
+  .viewer { position: relative; flex: 1; min-height: 200px; background: #000; display: grid; place-items: center; overflow: hidden; }
+  video { max-width: 100%; max-height: 100%; }
+  .caption { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); padding: 6px 14px; border-radius: 8px; background: rgba(0,0,0,.6); font-size: clamp(14px, 2.4vw, 22px); font-weight: 600; pointer-events: none; display: none; text-align: center; max-width: 90%; }
+  .empty { text-align: center; color: var(--muted); padding: 24px; }
+  .empty strong { display: block; color: var(--text); font-size: 16px; margin-bottom: 6px; }
+  .viewer.drag { outline: 2px dashed var(--accent); outline-offset: -10px; }
+  .controls { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+  .time { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: var(--muted); min-width: 120px; }
+  .controls .sp { flex: 1; }
+  kbd { font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; margin-left: 4px; }
+  .timeline { position: relative; height: 64px; margin: 0 14px 14px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line); cursor: pointer; overflow: hidden; user-select: none; }
+  .ticks { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,.06) 1px, transparent 1px); background-size: 5% 100%; }
+  .seg { position: absolute; top: 10px; bottom: 10px; border-radius: 6px; background: rgba(255,106,61,.25); border: 1px solid rgba(255,106,61,.7); font-size: 11px; padding: 3px 6px; overflow: hidden; white-space: nowrap; }
+  .range { position: absolute; top: 0; bottom: 0; background: rgba(255,209,102,.16); border-left: 2px solid var(--accent-2); border-right: 2px solid var(--accent-2); display: none; }
+  .playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
+  aside { border-left: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; min-height: 0; }
+  aside h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0; padding: 14px 14px 8px; font-weight: 600; display: flex; justify-content: space-between; }
+  .clips { flex: 1; overflow: auto; padding: 0 10px 10px; display: flex; flex-direction: column; gap: 6px; }
+  .clip { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--panel-2); }
+  .clip.active { border-color: var(--accent); }
+  .clip-top { display: flex; align-items: center; gap: 6px; }
+  .clip-top input { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; font-weight: 600; }
+  .clip small { display: block; color: var(--muted); font-family: ui-monospace, monospace; font-size: 11.5px; margin: 2px 0 6px; }
+  .clip .cap { width: 100%; height: 28px; border-radius: 6px; border: 1px solid var(--line); background: #111214; padding: 0 8px; outline: none; font-size: 12.5px; }
+  .clip .row { display: flex; gap: 4px; margin-top: 6px; }
+  .clip .row button { height: 26px; padding: 0 8px; font-size: 12px; }
+  .none { color: var(--muted); font-size: 13px; padding: 4px 4px 12px; }
+  .foot { padding: 10px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+  @media (max-width: 760px) { main { grid-template-columns: 1fr; } aside { border-left: 0; border-top: 1px solid var(--line); max-height: 45vh; } .viewer { min-height: 220px; } }
+</style>
+</head>
+<body>
+<header>
+  <span class="brand"><i></i>Reelcut</span>
+  <span class="file" id="fileName">No video</span>
+  <span class="sp"></span>
+  <button class="primary" id="openBtn">Open video</button>
+  <input type="file" id="fileInput" accept="video/*" hidden>
+</header>
+<main>
+  <section class="stage">
+    <div class="viewer" id="viewer">
+      <div class="empty" id="empty"><strong>Drop a video to start</strong>or use Open video. Nothing leaves your computer.</div>
+      <video id="video" playsinline hidden></video>
+      <div class="caption" id="caption"></div>
+    </div>
+    <div class="controls">
+      <button id="playBtn" disabled>Play<kbd>Space</kbd></button>
+      <span class="time" id="time">00:00.0 / 00:00.0</span>
+      <span class="sp"></span>
+      <button id="inBtn" disabled>Set in<kbd>I</kbd></button>
+      <button id="outBtn" disabled>Set out<kbd>O</kbd></button>
+      <button id="addBtn" disabled>Add clip<kbd>A</kbd></button>
+      <button id="splitBtn" disabled>Split at playhead<kbd>S</kbd></button>
+    </div>
+    <div class="timeline" id="timeline">
+      <div class="ticks"></div>
+      <div id="segs"></div>
+      <div class="range" id="range"></div>
+      <div class="playhead" id="playhead" style="left:0"></div>
+    </div>
+  </section>
+  <aside>
+    <h2><span>Clips</span><span id="total">0:00</span></h2>
+    <div class="clips" id="clips"><p class="none">Set an in and out point, then add a clip.</p></div>
+    <div class="foot">
+      <button id="seqBtn" disabled>Play sequence</button>
+      <button id="exportBtn" disabled>Export cut list</button>
+    </div>
+  </aside>
+</main>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const video = $('video'), viewer = $('viewer'), timeline = $('timeline');
+  const state = { inP: null, outP: null, clips: [], seq: -1, active: -1, name: '' };
+  const fmt = (t) => { t = Math.max(0, t || 0); const m = Math.floor(t / 60), s = t - m * 60; return String(m).padStart(2, '0') + ':' + s.toFixed(1).padStart(4, '0'); };
+  const dur = () => video.duration || 0;
+
+  function load(file) {
+    if (!file || !file.type.startsWith('video/')) return;
+    video.src = URL.createObjectURL(file);
+    state.name = file.name; state.clips = []; state.inP = state.outP = null;
+    $('fileName').textContent = file.name; video.hidden = false; $('empty').hidden = true;
+  }
+  $('openBtn').onclick = () => $('fileInput').click();
+  $('fileInput').onchange = (e) => load(e.target.files[0]);
+  viewer.ondragover = (e) => { e.preventDefault(); viewer.classList.add('drag'); };
+  viewer.ondragleave = () => viewer.classList.remove('drag');
+  viewer.ondrop = (e) => { e.preventDefault(); viewer.classList.remove('drag'); load(e.dataTransfer.files[0]); };
+
+  video.addEventListener('loadedmetadata', () => { ['playBtn', 'inBtn', 'outBtn', 'splitBtn'].forEach((b) => ($(b).disabled = false)); render(); });
+  video.addEventListener('timeupdate', tick);
+  video.addEventListener('play', () => ($('playBtn').firstChild.textContent = 'Pause'));
+  video.addEventListener('pause', () => ($('playBtn').firstChild.textContent = 'Play'));
+
+  function toggle() { if (!video.src) return; video.paused ? video.play() : video.pause(); }
+  $('playBtn').onclick = () => { state.seq = -1; toggle(); };
+  $('inBtn').onclick = () => { state.inP = video.currentTime; if (state.outP != null && state.outP <= state.inP) state.outP = null; render(); };
+  $('outBtn').onclick = () => { state.outP = video.currentTime; if (state.inP != null && state.inP >= state.outP) state.inP = null; render(); };
+  $('addBtn').onclick = addClip;
+  $('splitBtn').onclick = split;
+
+  function addClip() {
+    if (state.inP == null || state.outP == null) return;
+    state.clips.push({ start: state.inP, end: state.outP, title: 'Clip ' + (state.clips.length + 1), caption: '' });
+    state.inP = state.outP = null; render();
+  }
+  function split() {
+    const t = video.currentTime;
+    const i = state.clips.findIndex((c) => t > c.start + 0.1 && t < c.end - 0.1);
+    if (i === -1) { state.clips.push({ start: 0, end: t, title: 'Clip ' + (state.clips.length + 1), caption: '' }, { start: t, end: dur(), title: 'Clip ' + (state.clips.length + 2), caption: '' }); }
+    else { const c = state.clips[i]; state.clips.splice(i, 1, { ...c, end: t }, { ...c, start: t, title: c.title + ' (b)' }); }
+    render();
+  }
+
+  timeline.addEventListener('pointerdown', (e) => {
+    if (!dur()) return;
+    const seek = (ev) => { const r = timeline.getBoundingClientRect(); video.currentTime = Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width)) * dur(); tick(); };
+    seek(e); timeline.setPointerCapture(e.pointerId);
+    timeline.onpointermove = seek; timeline.onpointerup = () => (timeline.onpointermove = null);
+  });
+
+  function tick() {
+    const t = video.currentTime;
+    $('time').textContent = fmt(t) + ' / ' + fmt(dur());
+    $('playhead').style.left = (dur() ? (t / dur()) * 100 : 0) + '%';
+    if (state.seq >= 0) {
+      const c = state.clips[state.seq];
+      if (c && t >= c.end) { state.seq++; const n = state.clips[state.seq]; if (n) video.currentTime = n.start; else { state.seq = -1; video.pause(); } }
+    }
+    const idx = state.clips.findIndex((c) => t >= c.start && t < c.end);
+    const cap = idx >= 0 ? state.clips[idx].caption : '';
+    $('caption').textContent = cap; $('caption').style.display = cap ? 'block' : 'none';
+    if (idx !== state.active) { state.active = idx; document.querySelectorAll('.clip').forEach((el, i) => el.classList.toggle('active', i === idx)); }
+  }
+
+  function render() {
+    const d = dur() || 1;
+    $('segs').innerHTML = state.clips.map((c) => `<div class="seg" style="left:${(c.start / d) * 100}%;width:${((c.end - c.start) / d) * 100}%">${c.title.replace(/</g, '&lt;')}</div>`).join('');
+    const r = $('range');
+    if (state.inP != null || state.outP != null) {
+      const a = state.inP ?? 0, b = state.outP ?? d;
+      r.style.display = 'block'; r.style.left = (a / d) * 100 + '%'; r.style.width = ((b - a) / d) * 100 + '%';
+    } else r.style.display = 'none';
+    $('addBtn').disabled = state.inP == null || state.outP == null;
+    $('seqBtn').disabled = $('exportBtn').disabled = state.clips.length === 0;
+    const total = state.clips.reduce((s, c) => s + (c.end - c.start), 0);
+    $('total').textContent = fmt(total);
+    const list = $('clips');
+    if (!state.clips.length) { list.innerHTML = '<p class="none">Set an in and out point, then add a clip.</p>'; return; }
+    list.innerHTML = '';
+    state.clips.forEach((c, i) => {
+      const el = document.createElement('div');
+      el.className = 'clip';
+      el.innerHTML = `<div class="clip-top"><input value="${c.title.replace(/"/g, '&quot;')}" aria-label="Clip title"></div>
+        <small>${fmt(c.start)} → ${fmt(c.end)} · ${(c.end - c.start).toFixed(1)}s</small>
+        <input class="cap" placeholder="Text overlay" value="${c.caption.replace(/"/g, '&quot;')}">
+        <div class="row"><button data-a="go">Go</button><button data-a="up">↑</button><button data-a="down">↓</button><button data-a="del">Delete</button></div>`;
+      const [title, cap] = el.querySelectorAll('input');
+      title.oninput = () => { c.title = title.value; $('segs').children[i] && ($('segs').children[i].textContent = c.title); };
+      cap.oninput = () => { c.caption = cap.value; tick(); };
+      el.querySelector('.row').onclick = (e) => {
+        const a = e.target.dataset.a; if (!a) return;
+        if (a === 'go') { video.currentTime = c.start; tick(); }
+        if (a === 'del') state.clips.splice(i, 1);
+        if (a === 'up' && i > 0) [state.clips[i - 1], state.clips[i]] = [state.clips[i], state.clips[i - 1]];
+        if (a === 'down' && i < state.clips.length - 1) [state.clips[i + 1], state.clips[i]] = [state.clips[i], state.clips[i + 1]];
+        if (a !== 'go') render();
+      };
+      list.appendChild(el);
+    });
+  }
+
+  $('seqBtn').onclick = () => { if (!state.clips.length) return; state.seq = 0; video.currentTime = state.clips[0].start; video.play(); };
+  $('exportBtn').onclick = () => {
+    const data = { source: state.name, clips: state.clips.map((c) => ({ title: c.title, start: +c.start.toFixed(2), end: +c.end.toFixed(2), caption: c.caption })) };
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    a.download = (state.name.replace(/\.[^.]+$/, '') || 'cut') + '.cutlist.json'; a.click();
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || !video.src) return;
+    const k = e.key.toLowerCase();
+    if (k === ' ') { e.preventDefault(); toggle(); }
+    else if (k === 'i') $('inBtn').click();
+    else if (k === 'o') $('outBtn').click();
+    else if (k === 'a') addClip();
+    else if (k === 's') split();
+    else if (k === 'arrowleft') video.currentTime -= e.shiftKey ? 1 : 1 / 30;
+    else if (k === 'arrowright') video.currentTime += e.shiftKey ? 1 : 1 / 30;
+  });
+})();
+</script>
+</body>
+</html>
