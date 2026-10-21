@@ -4,7 +4,7 @@ Allt nedan är platshållare. Resten av sajten fungerar redan.
 
 ## Måste fyllas i före launch
 
-- [ ] **Contract address** för `$SHIP` → `ca` i `src/lib/brand.ts`. Visas i CA-pillen, på `/token` och i manualen.
+- [x] **Contract address** för `$SHIP` → `ca` i `src/lib/brand.ts` (satt). Visas i CA-pillen, på `/token` och i manualen.
       När den är satt hämtar `/token` live-priser automatiskt.
 - [ ] **Treasury-plånbok** → `treasury` i `src/lib/brand.ts`. Visas i manualen under *Launches and fees*.
 - [ ] **X-konto** → `xUrl` och `xHandle` (nu `@UseAnyShip`).

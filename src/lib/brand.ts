@@ -6,8 +6,8 @@ export const BRAND = {
   site: 'https://www.useanyship.fun',
   xUrl: 'https://x.com/UseAnyShip',
   xHandle: '@UseAnyShip',
-  // TODO(branding): klistra in tokenens contract address efter launch
-  ca: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxpump',
+  // Tokenens contract address ($SHIP på pump.fun)
+  ca: 'DNhdbEy4hwaYd4d33YLSks44nmhJ16aKp9dQhPQfpump',
   // TODO(branding): treasury-plånboken som tar emot launch-avgifter
   treasury: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   launchFeeSol: 0.025,

@@ -59,7 +59,7 @@ AnyShip is a launchpad where every coin is an app: describe it, launch its coin,
 
 Builder and demo build live now.
 
-CA: [CA]
+CA: DNhdbEy4hwaYd4d33YLSks44nmhJ16aKp9dQhPQfpump
 [länk]
 ```
 
@@ -92,7 +92,7 @@ AnyShip ($SHIP)
 
 Describe any app, launch its coin, and an AI writes your own original version from scratch.
 
-CA: [CA]
+CA: DNhdbEy4hwaYd4d33YLSks44nmhJ16aKp9dQhPQfpump
 [länk]
 ```
 
