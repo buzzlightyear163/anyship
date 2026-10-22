@@ -59,17 +59,43 @@ Plan, write, review, test. One stage left.
 The only real CA gets posted from this account.
 ```
 
-## Launch-inlägg (212) – fäst, bifoga brand/anyship_post.png. CA:n i ett svar under.
+## Launch-inlägg – fäst, bifoga brand/anyship_post.png. Ingen CA, den går i ett svar under.
 
+Lång version (714, kräver X Premium). De första ~200 tecknen bär hela kroken, resten syns under "Show more".
 ```text
 $SHIP is live.
 
-AnyShip is a launchpad where every coin is an app: describe it, launch its coin, and an AI writes your own original version from scratch.
+Every app you pay for is a list of features. AnyShip turns that list into an app you own.
 
-Builder and demo build live now.
+Describe it: a chat app like Discord, a browser like Chrome, an AI assistant like ChatGPT. Launch its coin on pump.fun, and an AI writes your own original version from scratch in about 20 minutes.
+
+What a build gets you:
+→ Original name, original code, your own icon
+→ One file that runs anywhere: host it, install it, sell it
+→ 50% of the creator fees from your app's coin
+→ Changes on request, in minutes
+
+Every coin is an app.
+
+The builder and a full demo build are live now, with 123 paid apps in the catalog to rebuild. Coin-powered builds ship next.
+
+Describe it. Ship it.
 
 [länk]
 ```
+
+Kort version (267, utan Premium):
+```text
+$SHIP is live.
+
+Every app you pay for is a list of features. AnyShip turns that list into an app you own: describe it, launch its coin, and an AI writes your own original version from scratch.
+
+One file. Original code. Yours.
+
+Try the builder: [länk]
+```
+
+Med den långa versionen räcker CA-svaret. Svar 1 och 2 nedan hör till den korta.
 
 Svar med CA (48), postas direkt under:
 ```text
