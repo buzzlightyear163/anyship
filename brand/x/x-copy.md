@@ -26,31 +26,40 @@ You pay for apps. What if you owned one? Describe it, launch its coin, and AnySh
 
 Webbplats: anyship.app (eller vald domän) · Plats: your-app.html
 
-## Pre-launch
+## Pre-launch (ingen länk till sajten, den kommer med launch-inlägget)
 
-1. Reveal, några timmar till en dag före (273). Bifoga brand/anyship_prelaunch_reveal.png.
+1. Reveal, några timmar till en dag före (206). Bifoga brand/anyship_prelaunch_reveal.png.
 ```text
 Meet AnyShip.
 
 Describe any app: a chat app, a browser, a video editor. Launch its coin, and an AI writes your own original version from scratch.
 
-The builder and a full demo build are up: [länk]
-
 $SHIP launches on pump.fun [tid].
 ```
 
-2. Sista call, 30–60 min före (236). Bifoga brand/anyship_prelaunch_call.png.
+2. Sista call, 30–60 min före (201). Bifoga brand/anyship_prelaunch_call.png.
+```text
+One stage left.
+
+$SHIP goes live on pump.fun in [tid].
+
+Describe any app. Launch its coin. Own your version.
+
+The CA drops here, from this account only. Anything else is fake.
+```
+
+Alternativ, mer förklarande (257):
 ```text
 $SHIP launches on pump.fun in [tid].
 
-AnyShip: describe any app, launch its coin, an AI writes your own version.
+AnyShip: describe any app, launch its coin, and an AI writes your own original version from scratch.
 
-Demo: [länk]
+Plan, write, review, test. One stage left.
 
-The only real CA gets posted from this account. Ignore any other.
+The only real CA gets posted from this account.
 ```
 
-## Launch-inlägg (261) – fäst, bifoga brand/anyship_post.png
+## Launch-inlägg (212) – fäst, bifoga brand/anyship_post.png. CA:n i ett svar under.
 
 ```text
 $SHIP is live.
@@ -59,8 +68,12 @@ AnyShip is a launchpad where every coin is an app: describe it, launch its coin,
 
 Builder and demo build live now.
 
-CA: DNhdbEy4hwaYd4d33YLSks44nmhJ16aKp9dQhPQfpump
 [länk]
+```
+
+Svar med CA (48), postas direkt under:
+```text
+CA: DNhdbEy4hwaYd4d33YLSks44nmhJ16aKp9dQhPQfpump
 ```
 
 Svar 1 (269):
